@@ -7,23 +7,19 @@ namespace Lesson_3
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
         Texture2D tribbleGreyTexture;
         Rectangle greyTribbleRect;
         Vector2 greyTribbleSpeed;
-
         Texture2D tribbleOrangeTexture;
         Rectangle orangeTribbleRect;
         Vector2 orangeTribbleSpeed;
-
         Texture2D tribbleCreamTexture;
         Rectangle creamTribbleRect;
         Vector2 creamTribbleSpeed;
-
         Texture2D tribbleBrownTexture;
         Rectangle brownTribbleRect;
         Vector2 brownTribbleSpeed;
-
+        public int random;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -42,12 +38,11 @@ namespace Lesson_3
             orangeTribbleRect = new Rectangle(300, 10, 100, 100);
             orangeTribbleSpeed = new Vector2(11, 0);
 
-            creamTribbleRect = new Rectangle(300, 10, 100, 100);
-            creamTribbleSpeed = new Vector2(5, 0);
-
             brownTribbleRect = new Rectangle(300, 10, 100, 100);
             brownTribbleSpeed = new Vector2(5, 7);
 
+            creamTribbleRect = new Rectangle(300, 10,100, 100);
+            creamTribbleSpeed = new Vector2(5, 0);
             base.Initialize();
         }
         protected override void LoadContent()
@@ -60,11 +55,11 @@ namespace Lesson_3
             tribbleOrangeTexture = Content.Load<Texture2D>("tribbleOrange");
             orangeTribbleRect = new Rectangle(0, 0, 100, 100);
 
-            tribbleCreamTexture = Content.Load<Texture2D>("tribbleCream");
-            creamTribbleRect = new Rectangle(0, 200, 100, 100);
-
             tribbleBrownTexture = Content.Load<Texture2D>("tribbleBrown");
             brownTribbleRect = new Rectangle(300, 10, 100, 100);
+
+            tribbleCreamTexture = Content.Load<Texture2D>("tribbleCream");
+            creamTribbleRect = new Rectangle(0,10, 100, 100);
         }
         protected override void Update(GameTime gameTime)
         {
@@ -81,17 +76,19 @@ namespace Lesson_3
             if (orangeTribbleRect.Right > _graphics.PreferredBackBufferWidth || orangeTribbleRect.Left < 0)
                 orangeTribbleSpeed.X *= -1;
 
-            creamTribbleRect.X += (int)creamTribbleSpeed.X;
-            creamTribbleRect.Y += (int)creamTribbleSpeed.Y;
-            if (creamTribbleRect.Right > _graphics.PreferredBackBufferWidth + 100)
-                creamTribbleRect = new Rectangle(0, 200, 100, 100);
-
             brownTribbleRect.X += (int)brownTribbleSpeed.X;
             brownTribbleRect.Y += (int)brownTribbleSpeed.Y;
             if (brownTribbleRect.Right > _graphics.PreferredBackBufferWidth + 100)
-                brownTribbleRect = creamTribbleRect;
+                brownTribbleRect = new Rectangle(creamTribbleRect.X, creamTribbleRect.Y, 100, 100);
             if (brownTribbleRect.Bottom > _graphics.PreferredBackBufferHeight + 100)
-                brownTribbleRect = creamTribbleRect;
+            {
+                brownTribbleRect = new Rectangle(creamTribbleRect.X, creamTribbleRect.Y, 100, 100);
+                brownTribbleSpeed.X *= -1;
+            }
+            creamTribbleRect.X += (int)creamTribbleSpeed.X;
+            creamTribbleRect.Y += (int)creamTribbleSpeed.Y;
+            if (creamTribbleRect.Right > _graphics.PreferredBackBufferWidth + 100)
+                creamTribbleRect = new Rectangle(-100, random, 100, 100);
 
             base.Update(gameTime);
         }
@@ -99,16 +96,12 @@ namespace Lesson_3
         {
             GraphicsDevice.Clear(Color.Red);
             // TODO: Add your drawing code here
-
             _spriteBatch.Begin();
-
             _spriteBatch.Draw(tribbleGreyTexture, greyTribbleRect, Color.White);
             _spriteBatch.Draw(tribbleOrangeTexture, orangeTribbleRect, Color.White);
-            _spriteBatch.Draw(tribbleCreamTexture, creamTribbleRect, Color.White);
             _spriteBatch.Draw(tribbleBrownTexture, brownTribbleRect, Color.White);
-
+            _spriteBatch.Draw(tribbleCreamTexture, creamTribbleRect, Color.White);
             _spriteBatch.End();
-
             base.Draw(gameTime);
         }
     }
