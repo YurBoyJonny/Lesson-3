@@ -6,8 +6,6 @@ namespace Lesson_3
         [STAThread]
         static void Main()
         {
-            Random random = new Random();
-
             using (var game = new Game1())
             game.Run();
             

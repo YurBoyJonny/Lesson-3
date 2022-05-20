@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
+
 namespace Lesson_3
 {
     public class Game1 : Game
@@ -19,7 +21,7 @@ namespace Lesson_3
         Texture2D tribbleBrownTexture;
         Rectangle brownTribbleRect;
         Vector2 brownTribbleSpeed;
-        public int random;
+        Random generator = new Random();
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -39,10 +41,10 @@ namespace Lesson_3
             orangeTribbleSpeed = new Vector2(11, 0);
 
             brownTribbleRect = new Rectangle(300, 10, 100, 100);
-            brownTribbleSpeed = new Vector2(5, 7);
+            brownTribbleSpeed = new Vector2(10, 13);
 
-            creamTribbleRect = new Rectangle(300, 10,100, 100);
-            creamTribbleSpeed = new Vector2(5, 0);
+            creamTribbleRect = new Rectangle(300, 200,100, 100);
+            creamTribbleSpeed = new Vector2(10, 0);
             base.Initialize();
         }
         protected override void LoadContent()
@@ -59,7 +61,7 @@ namespace Lesson_3
             brownTribbleRect = new Rectangle(300, 10, 100, 100);
 
             tribbleCreamTexture = Content.Load<Texture2D>("tribbleCream");
-            creamTribbleRect = new Rectangle(0,10, 100, 100);
+            creamTribbleRect = new Rectangle(0, generator.Next(1,500), 100, 100);
         }
         protected override void Update(GameTime gameTime)
         {
@@ -78,18 +80,25 @@ namespace Lesson_3
 
             brownTribbleRect.X += (int)brownTribbleSpeed.X;
             brownTribbleRect.Y += (int)brownTribbleSpeed.Y;
-            if (brownTribbleRect.Right > _graphics.PreferredBackBufferWidth + 100)
-                brownTribbleRect = new Rectangle(creamTribbleRect.X, creamTribbleRect.Y, 100, 100);
-            if (brownTribbleRect.Bottom > _graphics.PreferredBackBufferHeight + 100)
+            if (brownTribbleRect.Top > _graphics.PreferredBackBufferHeight || brownTribbleRect.Left > _graphics.PreferredBackBufferWidth || brownTribbleRect.Right < 0 || brownTribbleRect.Bottom < 0)
             {
                 brownTribbleRect = new Rectangle(creamTribbleRect.X, creamTribbleRect.Y, 100, 100);
-                brownTribbleSpeed.X *= -1;
+                brownTribbleSpeed.X = generator.Next(-8, 8);
+                brownTribbleSpeed.Y = generator.Next(-8, 8);
+                while (brownTribbleSpeed.X == 0 && brownTribbleSpeed.Y == 0)
+                {
+                    brownTribbleSpeed.X = generator.Next(-8, 8);
+                    brownTribbleSpeed.Y = generator.Next(-8, 8);
+                }
             }
+
             creamTribbleRect.X += (int)creamTribbleSpeed.X;
             creamTribbleRect.Y += (int)creamTribbleSpeed.Y;
-            if (creamTribbleRect.Right > _graphics.PreferredBackBufferWidth + 100)
-                creamTribbleRect = new Rectangle(-100, random, 100, 100);
-
+            if (creamTribbleRect.Left > _graphics.PreferredBackBufferWidth)
+            {
+                creamTribbleRect.X = -creamTribbleRect.Width;
+                creamTribbleRect.Y = generator.Next(_graphics.PreferredBackBufferHeight - creamTribbleRect.Height);
+            }
             base.Update(gameTime);
         }
         protected override void Draw(GameTime gameTime)
