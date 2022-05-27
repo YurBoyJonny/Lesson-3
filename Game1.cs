@@ -3,11 +3,26 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Threading;
 
 namespace Lesson_3
 {
     public class Game1 : Game
     {
+        enum Screen
+        {
+            Intro,
+            TribbleYard,
+            Outro
+        }
+        Screen screen;
+
+        MouseState mouseState;
+        Texture2D tribbleIntroTexture;
+        SpriteFont tribbleIntroText;
+
+        KeyboardState keyboardState;
+
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         Texture2D tribbleGreyTexture;
@@ -28,7 +43,7 @@ namespace Lesson_3
         SoundEffectInstance tribbleCooInstance;
         bool wallHit;
 
-        Color backgroundColor = Color.Red;
+        Color backgroundColor = Color.White;
 
         public Game1()
         {
@@ -56,6 +71,8 @@ namespace Lesson_3
 
             wallHit = false;
 
+            screen = Screen.Intro;
+
             base.Initialize();
         }
         protected override void LoadContent()
@@ -76,56 +93,72 @@ namespace Lesson_3
 
             tribbleCoo = Content.Load<SoundEffect>("tribble_coo");
             tribbleCooInstance = tribbleCoo.CreateInstance();
+
+            tribbleIntroText = Content.Load<SpriteFont>("tribbleIntroText");
+            tribbleIntroTexture = Content.Load<Texture2D>("tribble_intro");
+
         }
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-            // TODO: Add your update logic here
-            greyTribbleRect.X += (int)greyTribbleSpeed.X;
-            greyTribbleRect.Y += (int)greyTribbleSpeed.Y;
-            if (greyTribbleRect.Bottom > _graphics.PreferredBackBufferHeight || greyTribbleRect.Top < 0)
-            {
-                greyTribbleSpeed.Y *= -1;
-                tribbleCooInstance.Stop();
-                wallHit = true;
-            }
-            orangeTribbleRect.X += (int)orangeTribbleSpeed.X;
-            orangeTribbleRect.Y += (int)orangeTribbleSpeed.Y;
-            if (orangeTribbleRect.Right > _graphics.PreferredBackBufferWidth || orangeTribbleRect.Left < 0)
-            {
-                orangeTribbleSpeed.X *= -1;
-                tribbleCooInstance.Stop();
-                wallHit = true;
-            }
-            brownTribbleRect.X += (int)brownTribbleSpeed.X;
-            brownTribbleRect.Y += (int)brownTribbleSpeed.Y;
-            if (brownTribbleRect.Top > _graphics.PreferredBackBufferHeight || brownTribbleRect.Left > _graphics.PreferredBackBufferWidth || brownTribbleRect.Right < 0 || brownTribbleRect.Bottom < 0)
-            {
-                brownTribbleRect = new Rectangle(creamTribbleRect.X, creamTribbleRect.Y, 100, 100);
-                brownTribbleSpeed.X = generator.Next(-8, 8);
-                brownTribbleSpeed.Y = generator.Next(-8, 8);
-                tribbleCooInstance.Stop();
-                wallHit = true;
+            keyboardState = Keyboard.GetState();
 
-                while (brownTribbleSpeed.X == 0 && brownTribbleSpeed.Y == 0)
+            mouseState = Mouse.GetState();
+            if (screen == Screen.Intro)
+            {
+                if (mouseState.LeftButton == ButtonState.Pressed)
+                    screen = Screen.TribbleYard;
+            }
+            else if (screen == Screen.TribbleYard)
+            {
+                // TODO: Add your update logic here
+                greyTribbleRect.X += (int)greyTribbleSpeed.X;
+                greyTribbleRect.Y += (int)greyTribbleSpeed.Y;
+                if (greyTribbleRect.Bottom > _graphics.PreferredBackBufferHeight || greyTribbleRect.Top < 0)
                 {
+                    greyTribbleSpeed.Y *= -1;
+                    tribbleCooInstance.Stop();
+                    wallHit = true;
+                }
+                orangeTribbleRect.X += (int)orangeTribbleSpeed.X;
+                orangeTribbleRect.Y += (int)orangeTribbleSpeed.Y;
+                if (orangeTribbleRect.Right > _graphics.PreferredBackBufferWidth || orangeTribbleRect.Left < 0)
+                {
+                    orangeTribbleSpeed.X *= -1;
+                    tribbleCooInstance.Stop();
+                    wallHit = true;
+                }
+                brownTribbleRect.X += (int)brownTribbleSpeed.X;
+                brownTribbleRect.Y += (int)brownTribbleSpeed.Y;
+                if (brownTribbleRect.Top > _graphics.PreferredBackBufferHeight || brownTribbleRect.Left > _graphics.PreferredBackBufferWidth || brownTribbleRect.Right < 0 || brownTribbleRect.Bottom < 0)
+                {
+                    brownTribbleRect = new Rectangle(creamTribbleRect.X, creamTribbleRect.Y, 100, 100);
                     brownTribbleSpeed.X = generator.Next(-8, 8);
                     brownTribbleSpeed.Y = generator.Next(-8, 8);
-                }
-            }
-            creamTribbleRect.X += (int)creamTribbleSpeed.X;
-            creamTribbleRect.Y += (int)creamTribbleSpeed.Y;
-            if (creamTribbleRect.Left > _graphics.PreferredBackBufferWidth)
-            {
-                creamTribbleRect.X = -creamTribbleRect.Width;
-                creamTribbleRect.Y = generator.Next(_graphics.PreferredBackBufferHeight - creamTribbleRect.Height);
-                tribbleCooInstance.Stop();
-                wallHit = true;
-            }
-            if (wallHit == true)
-                tribbleCooInstance.Play();
+                    tribbleCooInstance.Stop();
+                    wallHit = true;
 
+                    while (brownTribbleSpeed.X == 0 && brownTribbleSpeed.Y == 0)
+                    {
+                        brownTribbleSpeed.X = generator.Next(-8, 8);
+                        brownTribbleSpeed.Y = generator.Next(-8, 8);
+                    }
+                }
+                creamTribbleRect.X += (int)creamTribbleSpeed.X;
+                creamTribbleRect.Y += (int)creamTribbleSpeed.Y;
+                if (creamTribbleRect.Left > _graphics.PreferredBackBufferWidth)
+                {
+                    creamTribbleRect.X = -creamTribbleRect.Width;
+                    creamTribbleRect.Y = generator.Next(_graphics.PreferredBackBufferHeight - creamTribbleRect.Height);
+                    tribbleCooInstance.Stop();
+                    wallHit = true;
+                }
+                if (wallHit == true)
+                    tribbleCooInstance.Play();
+            }
+
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
+            
             base.Update(gameTime);
         }
         protected override void Draw(GameTime gameTime)
@@ -133,22 +166,46 @@ namespace Lesson_3
             GraphicsDevice.Clear(backgroundColor);
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            _spriteBatch.Draw(tribbleGreyTexture, greyTribbleRect, Color.White);
-            _spriteBatch.Draw(tribbleOrangeTexture, orangeTribbleRect, Color.White);
-            _spriteBatch.Draw(tribbleBrownTexture, brownTribbleRect, Color.White);
-            _spriteBatch.Draw(tribbleCreamTexture, creamTribbleRect, Color.White);
-
-
-            if (orangeTribbleRect.Right >= _graphics.PreferredBackBufferWidth)
+            if (screen == Screen.Intro)
             {
-                backgroundColor = Color.Green;
+                _spriteBatch.Draw(tribbleIntroTexture, new Rectangle(0, 0, 800, 500), Color.White);
+                _spriteBatch.DrawString(tribbleIntroText, "CLICK ANYWHERE TO CONTINUE", new Vector2(85, 10), Color.White);
             }
-            else if (orangeTribbleRect.Left < 0)
+            else if (screen == Screen.TribbleYard)
             {
-                backgroundColor = Color.Blue;
+                _spriteBatch.DrawString(tribbleIntroText, "PRESS SPACE FOR OUTRO SCREEN", new Vector2(85, 10), Color.White);
+                _spriteBatch.Draw(tribbleGreyTexture, greyTribbleRect, Color.White);
+                _spriteBatch.Draw(tribbleOrangeTexture, orangeTribbleRect, Color.White);
+                _spriteBatch.Draw(tribbleBrownTexture, brownTribbleRect, Color.White);
+                _spriteBatch.Draw(tribbleCreamTexture, creamTribbleRect, Color.White);
+                
+                if (orangeTribbleRect.Right >= _graphics.PreferredBackBufferWidth)
+                {
+                    backgroundColor = Color.Green;
+                }
+                else if (orangeTribbleRect.Left < 0)
+                {
+                    backgroundColor = Color.Blue;
+                }
+                else if (greyTribbleRect.Bottom > _graphics.PreferredBackBufferHeight)
+                {
+                    backgroundColor = Color.Red;
+                }
+                else if (greyTribbleRect.Top < 0)
+                {
+                    backgroundColor = Color.Purple;
+                }
+                if (keyboardState.IsKeyDown(Keys.Space))
+                {
+                    screen = Screen.Outro;
+                    if (screen == Screen.Outro)
+                    {
+                        _spriteBatch.Draw(tribbleIntroTexture, new Rectangle(0, 0, 800, 500), Color.White);
+                        _spriteBatch.DrawString(tribbleIntroText, "OUTRO SCREEN", new Vector2(85, 10), Color.Red);
+                    }
+
+                }
             }
-
-
             _spriteBatch.End();
             base.Draw(gameTime);
         }
