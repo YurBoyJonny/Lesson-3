@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Threading;
 
 namespace Lesson_3
 {
@@ -166,10 +165,22 @@ namespace Lesson_3
             GraphicsDevice.Clear(backgroundColor);
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
+
+            if (screen == Screen.Outro)
+            {
+                _spriteBatch.Draw(tribbleIntroTexture, new Rectangle(0, 0, 800, 500), Color.White);
+                _spriteBatch.DrawString(tribbleIntroText, "OUTRO SCREEN", new Vector2(250, 150), Color.Red);
+                tribbleCooInstance.Stop();
+            }
+
             if (screen == Screen.Intro)
             {
                 _spriteBatch.Draw(tribbleIntroTexture, new Rectangle(0, 0, 800, 500), Color.White);
-                _spriteBatch.DrawString(tribbleIntroText, "CLICK ANYWHERE TO CONTINUE", new Vector2(85, 10), Color.White);
+                _spriteBatch.DrawString(tribbleIntroText, "CLICK ANYWHERE TO CONTINUE", new Vector2(90, 10), Color.White);
+            }
+            else if (keyboardState.IsKeyDown(Keys.Space))
+            {
+                screen = Screen.Outro;
             }
             else if (screen == Screen.TribbleYard)
             {
@@ -194,16 +205,6 @@ namespace Lesson_3
                 else if (greyTribbleRect.Top < 0)
                 {
                     backgroundColor = Color.Purple;
-                }
-                if (keyboardState.IsKeyDown(Keys.Space))
-                {
-                    screen = Screen.Outro;
-                    if (screen == Screen.Outro)
-                    {
-                        _spriteBatch.Draw(tribbleIntroTexture, new Rectangle(0, 0, 800, 500), Color.White);
-                        _spriteBatch.DrawString(tribbleIntroText, "OUTRO SCREEN", new Vector2(85, 10), Color.Red);
-                    }
-
                 }
             }
             _spriteBatch.End();
