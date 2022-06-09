@@ -43,7 +43,7 @@ namespace Lesson_3
         bool wallHit;
 
         Color backgroundColor = Color.White;
-
+        //
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
